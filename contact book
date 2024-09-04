@@ -1,0 +1,98 @@
+import json
+import os
+
+# Define the file to store tasks
+TASKS_FILE = "tasks.json"
+
+def load_tasks():
+    """Load tasks from the JSON file."""
+    if os.path.exists(TASKS_FILE):
+        with open(TASKS_FILE, 'r') as file:
+            return json.load(file)
+    return {}
+
+def save_tasks(tasks):
+    """Save tasks to the JSON file."""
+    with open(TASKS_FILE, 'w') as file:
+        json.dump(tasks, file, indent=4)
+
+def add_task(tasks):
+    """Add a new task."""
+    title = input("Enter task title: ").strip()
+    description = input("Enter task description: ").strip()
+    tasks[title] = {"description": description, "completed": False}
+    save_tasks(tasks)
+    print("Task added successfully.")
+
+def view_tasks(tasks):
+    """View all tasks."""
+    if not tasks:
+        print("No tasks available.")
+        return
+    
+    print("\nTask List:")
+    for title, details in tasks.items():
+        status = "Completed" if details["completed"] else "Pending"
+        print(f"Title: {title}, Description: {details['description']}, Status: {status}")
+
+def update_task(tasks):
+    """Update an existing task."""
+    title = input("Enter the title of the task to update: ").strip()
+    if title in tasks:
+        new_description = input("Enter new task description: ").strip()
+        new_status = input("Enter new status (completed/pending): ").strip().lower()
+        if new_status not in ['completed', 'pending']:
+            print("Invalid status. It should be 'completed' or 'pending'.")
+            return
+        tasks[title] = {
+            "description": new_description,
+            "completed": True if new_status == 'completed' else False
+        }
+        save_tasks(tasks)
+        print("Task updated successfully.")
+    else:
+        print("Task not found.")
+
+def delete_task(tasks):
+    """Delete a task."""
+    title = input("Enter the title of the task to delete: ").strip()
+    if title in tasks:
+        del tasks[title]
+        save_tasks(tasks)
+        print("Task deleted successfully.")
+    else:
+        print("Task not found.")
+
+def display_menu():
+    """Display the main menu."""
+    print("\nTo-Do List Application")
+    print("1. Add Task")
+    print("2. View Tasks")
+    print("3. Update Task")
+    print("4. Delete Task")
+    print("5. Exit")
+
+def main():
+    """Main function to run the To-Do List application."""
+    tasks = load_tasks()
+    
+    while True:
+        display_menu()
+        choice = input("Choose an option: ").strip()
+        
+        if choice == '1':
+            add_task(tasks)
+        elif choice == '2':
+            view_tasks(tasks)
+        elif choice == '3':
+            update_task(tasks)
+        elif choice == '4':
+            delete_task(tasks)
+        elif choice == '5':
+            print("Exiting the application.")
+            break
+        else:
+            print("Invalid option. Please try again.")
+
+if __name__ == "__main__":
+    main()
